@@ -57,5 +57,6 @@ with open(transformed_filename, 'rb') as transformed_file:
 
 # Verbindung zum FTP-Server schließen
 ftp.quit()
+ftp2.quit()
 
 print("Operation erfolgreich abgeschlossen.")
