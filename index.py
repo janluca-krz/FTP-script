@@ -52,7 +52,7 @@ try:
                 'Debitor': '',
                 'GLN': '',
                 'DatRpt': '',
-                'Ek Artikelnummer': cleaned_row[1],
+                'Ek Artikelnummer': cleaned_row[0],
                 'EANUPC': cleaned_row[2],
                 'EANTyp': '',
                 'verf': cleaned_row[3]
