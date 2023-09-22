@@ -2,7 +2,7 @@ import ftplib
 import openpyxl
 import csv
 import pandas as pd
-
+import pyautogui
 
 ftp_host = 'ek-product-data.ek-fileserver.de'
 ftp_user = 'compravo'
@@ -31,35 +31,44 @@ ftp2 = ftplib.FTP_TLS(ftp_host2, ftp_user2, ftp_pass2)
 ftp2.cwd(ftp_dir2)
 
 
-df = pd.read_csv(local_filename, sep=',')
-print(df.columns)
+local_csv_file = 'lokal.csv'
 
+# CSV-Datei herunterladen
+with open(local_csv_file, 'wb') as local_file:
+    ftp.retrbinary('RETR ' + remote_filename, local_file.write)
 
-df[';H;'] = ''
-df[';H;'] = df[';H;'].str.replace(',', '')
-df[';INVRPT;'] = ''
-df[';Debitor;'] = ''
-df[';GLN;'] = ''
-df[';DatRpt;'] = ''
+# CSV-Datei bearbeiten
+new_rows = []
+with open(local_csv_file, 'r', newline='' ) as csvfile:
+    reader = csv.DictReader(csvfile, delimiter=';',)
+    fieldnames = ['H;', 'INVRPT;', 'Debitor;', 'GLN;', 'DatRpt;', 'Ek Artikelnummer', ';EANUPC', 'EANTyp;', 'verf;']
+    writer = csv.DictWriter(csvfile, fieldnames= fieldnames, delimiter=';', quoting=csv.QUOTE_MINIMAL)
 
-df.rename(columns={'EAN': 'EK Artikelnummer'}, inplace=True)
-df.rename(columns={'Artikel_Nr': 'EANUPC'}, inplace=True)
+    
+    for row in reader:
+        new_row = {
+            'H;': ';',
+            'INVRPT;': ';',
+            'Debitor;': ';',
+            'GLN;': ';',
+            'DatRpt;': '',
+            'Ek Artikelnummer': ';' +  row['Artikel_Nr'],
+            ';EANUPC;': ';' + row['EAN'],
+            'EANTyp;': ';' + ';',
+            'verf;': row['BSTD']
+        }
+        new_rows.append(new_row)
 
+# CSV-Datei mit den neuen Spalten speichern
+with open(local_csv_file, 'w', newline='') as csvfile:
+    fieldnames = ['H;', 'INVRPT;', 'Debitor;', 'GLN;', 'DatRpt;', 'Ek Artikelnummer', ';EANUPC;', 'EANTyp;', 'verf;']
+    writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
+    writer.writeheader()
+    writer.writerows(new_rows)
 
-transformed_filename = 'BESTAND_EK_transformed.csv'
-df.to_csv(transformed_filename, index=False)
+# CSV-Datei zurück auf den FTP-Server hochladen
+with open(local_csv_file, 'rb') as local_file:
+    ftp2.storbinary('STOR ' + local_filename, local_file)
 
-df = pd.read_csv(transformed_filename)
-df = df.astype(str)
-df = df.apply(lambda x: x.str.replace('nan', '//'))
-df.to_csv(transformed_filename, index=False)
-
-
-
-with open(transformed_filename, 'rb') as transformed_file:
-    ftp2.storbinary('STOR ' + transformed_filename, transformed_file)
-
+# FTP-Verbindung schließen
 ftp.quit()
-ftp2.quit()
-
-print("Operation erfolgreich abgeschlossen.")
