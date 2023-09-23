@@ -52,19 +52,23 @@ try:
                 'Debitor': '',
                 'GLN': '',
                 'DatRpt': '',
-                'Ek Artikelnummer': cleaned_row[0],
-                'EANUPC': cleaned_row[2],
+                'Ek Artikelnummer': cleaned_row[1],
+                'EANUPC': cleaned_row[0],
                 'EANTyp': '',
                 'verf': cleaned_row[3]
             }
             new_rows.append(new_row)
 
 
+    counter = 0
     with open(local_csv_file, 'w', newline='') as csvfile:
+        
         writer = csv.DictWriter(csvfile, fieldnames=fieldnames, delimiter=';', quoting=csv.QUOTE_MINIMAL)
         writer.writeheader()
         for row in new_rows:
-            writer.writerow(row)
+            if counter != 0:
+                writer.writerow(row)
+            counter += 1
 
     with open(local_csv_file, 'rb') as local_file:
         ftp2.storbinary('STOR ' + local_filename, local_file)
