@@ -3,6 +3,7 @@ import openpyxl
 import csv
 import pandas as pd
 import pyautogui
+import smtplib, ssl
 
 try:
     ftp_host = 'ek-product-data.ek-fileserver.de'
@@ -77,4 +78,27 @@ try:
     ftp.quit()
 
 except:
-    print('Fehler')
+    def sendEmail():
+        smtp_server = "smtp.gmail.com"
+        port = 587
+        sender_email = "my@gmail.com"
+        password = ''  # Passwort hier eintragen
+
+        receiver_email = "your@gmail.com"
+
+        # Einen sicheren SSL-Kontext erstellen
+        context = ssl.create_default_context()
+
+        # Fehlermeldung ersetzen
+        error_message = f"Es ist ein Fehler mit dem Durchlauf der CSV Datei aufgetreten."
+
+        try:
+            with smtplib.SMTP(smtp_server, port) as server:
+                server.starttls(context=context)
+                server.login(sender_email, password)
+                server.sendmail(sender_email, receiver_email, error_message)
+            print("E-Mail wurde erfolgreich gesendet.")
+        except Exception as e:
+            print("Fehler beim Senden der E-Mail:", str(e))
+
+sendEmail()
