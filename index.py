@@ -17,7 +17,7 @@ try:
     ftp_pass2 = 'Adk!2390AmLopEzt!23'
 
 
-    remote_filename = 'EK_stock.csv'
+    remote_filename = 'EK_stockk.csv'
     local_filename = 'BESTAND_EK.csv'
 
 
@@ -53,8 +53,8 @@ try:
                 'Debitor': '',
                 'GLN': '',
                 'DatRpt': '',
-                'Ek Artikelnummer': cleaned_row[1],
-                'EANUPC': cleaned_row[0],
+                'Ek Artikelnummer': '',
+                'EANUPC': cleaned_row[1],
                 'EANTyp': '',
                 'verf': cleaned_row[3]
             }
@@ -79,18 +79,17 @@ try:
 
 except:
     def sendEmail():
-        smtp_server = "smtp.gmail.com"
+        smtp_server = "smtp.office365.com"
         port = 587
-        sender_email = "my@gmail.com"
-        password = ''  # Passwort hier eintragen
-
-        receiver_email = "your@gmail.com"
+        sender_email = "media@ek-servicegroup.com"
+        password = 'Start123'  # Passwort hier eintragen
+        receiver_email = "j.krumpholz@ek-retail.com"
 
         # Einen sicheren SSL-Kontext erstellen
         context = ssl.create_default_context()
 
         # Fehlermeldung ersetzen
-        error_message = f"Es ist ein Fehler mit dem Durchlauf der CSV Datei aufgetreten."
+        error_message = "Es ist ein Fehler mit dem Durchlauf der CSV Datei aufgetreten."
 
         try:
             with smtplib.SMTP(smtp_server, port) as server:
